@@ -4,13 +4,12 @@ import os, shutil
 import numpy as np
 from torch.autograd import Variable
 
-
 def repackage_hidden(h):
-    if type(h) == Variable:
-        return Variable(h.data)
+    """Wraps hidden states in new Tensors, to detach them from their history."""
+    if isinstance(h, torch.Tensor):
+        return h.detach()
     else:
         return tuple(repackage_hidden(v) for v in h)
-
 
 def batchify(data, bsz, args):
     nbatch = data.size(0) // bsz
@@ -64,10 +63,11 @@ def embedded_dropout(embed, words, dropout=0.1, scale=None):
     padding_idx = embed.padding_idx
     if padding_idx is None:
         padding_idx = -1
-    X = embed._backend.Embedding.apply(words, masked_embed_weight,
+    X = nn.functional.embedding(words, masked_embed_weight,
         padding_idx, embed.max_norm, embed.norm_type,
         embed.scale_grad_by_freq, embed.sparse
     )
+
     return X
 
 

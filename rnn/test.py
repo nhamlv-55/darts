@@ -84,7 +84,6 @@ corpus = data.Corpus(args.data)
 test_batch_size = 1
 test_data = batchify(corpus.test, test_batch_size, args)
 
-
 def evaluate(data_source, batch_size=10):
     # Turn on evaluation mode which disables dropout.
     model.eval()
@@ -102,7 +101,7 @@ def evaluate(data_source, batch_size=10):
         total_loss += loss * len(data)
 
         hidden = repackage_hidden(hidden)
-    return total_loss[0] / len(data_source)
+    return total_loss.item() / len(data_source)
 
 # Load the best saved model.
 model = torch.load(args.model_path)
